@@ -165,8 +165,22 @@ function ScoreRing({ score, riskColor }: { score:number; riskColor:string }) {
 export default function ResultPage() {
   const params = useSearchParams();
   const router = useRouter();
-  const raw = params.get("data");
-  const answers: string[] = raw ? JSON.parse(decodeURIComponent(raw)) : ["Yes","Sometimes","Yes","Yes","Yes","Sometimes"];
+ const raw = params.get("data");
+
+let answers: string[] = ["Yes","Sometimes","Yes","Yes","Yes","Sometimes"];
+
+try {
+  if (raw) {
+    const decoded = decodeURIComponent(raw);
+    const parsed = JSON.parse(decoded);
+
+    if (Array.isArray(parsed)) {
+      answers = parsed;
+    }
+  }
+} catch (e) {
+  console.log("Invalid query data, using default answers");
+}
 
   const { score, risk, riskColor, cycle, hormones, lifestyle, acneStat, weight, hair, energy, mood } = computeResult(answers);
 
